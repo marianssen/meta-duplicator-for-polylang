@@ -59,18 +59,6 @@ class PolylangContentSync
     }
 
     /**
-     * Load plugin textdomain for translations
-     */
-    public function load_textdomain()
-    {
-        load_plugin_textdomain(
-            'meta-duplicator-for-polylang',
-            false,
-            basename(dirname(__FILE__)) . '/languages'
-        );
-    }
-
-    /**
      * Check if required dependencies are active
      */
     public function check_dependencies()
