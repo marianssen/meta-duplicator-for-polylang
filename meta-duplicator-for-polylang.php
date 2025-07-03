@@ -8,7 +8,7 @@
  * Text Domain: meta-duplicator-for-polylang
  * Domain Path: /languages
  * Requires at least: 6.0
- * Tested up to: 6.8.1
+ * Tested up to: 6.8
  * Requires PHP: 7.4
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -194,7 +194,7 @@ class PolylangContentSync
                     </button>
                 </div>',
                 (int) $translation_id,
-                $current_post_id,
+                esc_html($current_post_id),
                 esc_attr($lang_name),
                 esc_html($lang_name)
             );
@@ -210,7 +210,7 @@ class PolylangContentSync
     public function ajax_sync_content()
     {
         // Verify request method
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
             wp_die(
                 wp_json_encode(array(
                     'success' => false,
@@ -227,7 +227,7 @@ class PolylangContentSync
         // Sanitize and validate input
         $source_post_id = isset($_POST['source_id']) ? (int) $_POST['source_id'] : 0;
         $target_post_id = isset($_POST['target_id']) ? (int) $_POST['target_id'] : 0;
-        $nonce = isset($_POST['nonce']) ? sanitize_text_field($_POST['nonce']) : '';
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
         // Verify nonce with specific action
         if (!wp_verify_nonce($nonce, 'polylang_sync_content_' . $target_post_id)) {
@@ -591,6 +591,7 @@ class PolylangContentSync
             'ajaxurl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('polylang_sync_content_' . $post->ID),
             'messages' => array(
+                /* translators: 1: polylang language */
                 'confirm' => esc_html__('Are you sure you want to copy all content from the %s language version? This action will overwrite all current metadata and ACF fields.', 'meta-duplicator-for-polylang'),
                 'copying' => esc_html__('Copying...', 'meta-duplicator-for-polylang'),
                 'copyingContent' => esc_html__('Copying content...', 'meta-duplicator-for-polylang'),
