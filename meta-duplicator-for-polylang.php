@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Meta Duplicator for Polylang
  * Description: Copy custom fields and ACF data between Polylang translations. Adds a meta box to sync post meta across languages.
- * Version: 0.1
+ * Version: 0.2
  * Author: Marián Rehák
  * Text Domain: meta-duplicator-for-polylang
  * Domain Path: /languages
@@ -492,13 +492,20 @@ class PolylangContentSync
         $acf_count = 0;
         foreach ($source_fields as $field_name => $field_value) {
             try {
+                // Get field object to check field type
+                $field_object = get_field_object($field_name, $source_post_id);
+
+                if ($field_object && isset($field_object['type'])) {
+                    $field_value = $this->process_field_value($field_value, $field_object, $source_post_id);
+                }
+
                 if (update_field($field_name, $field_value, $target_post_id)) {
                     $acf_count++;
                 }
             } catch (Exception $e) {
                 $error_message = sprintf(
                     /* translators: 1: field name, 2: error message */
-                    esc_html__('Error syncing ACF field %1$s: %2$s', 'meta-duplicator-for-polylang'),
+                    esc_html__('Error syncing ACF field %1$s: %2$s', 'polylang-duplicate-content'),
                     $field_name,
                     $e->getMessage()
                 );
@@ -510,6 +517,154 @@ class PolylangContentSync
             'count' => $acf_count,
             'errors' => $errors
         );
+    }
+
+    /**
+     * Process field value based on field type
+     *
+     * @param mixed $value Field value
+     * @param array $field_object Field object with type information
+     * @param int $source_post_id Source post ID
+     * @return mixed Processed field value
+     */
+    private function process_field_value($value, $field_object, $source_post_id)
+    {
+        $field_type = $field_object['type'];
+
+        switch ($field_type) {
+            case 'oembed':
+                // For oEmbed fields, get the raw URL instead of cached HTML
+                $raw_value = get_post_meta($source_post_id, $field_object['name'], true);
+                return $raw_value;
+
+            case 'image':
+            case 'file':
+                // For media fields, ensure we're copying the attachment ID, not the array
+                if (is_array($value) && isset($value['ID'])) {
+                    return $value['ID'];
+                }
+                return $value;
+
+            case 'gallery':
+                // For gallery fields, ensure we have attachment IDs
+                if (is_array($value)) {
+                    $ids = array();
+                    foreach ($value as $item) {
+                        if (is_array($item) && isset($item['ID'])) {
+                            $ids[] = $item['ID'];
+                        } elseif (is_numeric($item)) {
+                            $ids[] = $item;
+                        }
+                    }
+                    return $ids;
+                }
+                return $value;
+
+            case 'post_object':
+            case 'page_link':
+            case 'relationship':
+                // For post relationship fields, ensure we have post IDs
+                if (is_array($value)) {
+                    $ids = array();
+                    foreach ($value as $item) {
+                        if (is_object($item) && isset($item->ID)) {
+                            $ids[] = $item->ID;
+                        } elseif (is_array($item) && isset($item['ID'])) {
+                            $ids[] = $item['ID'];
+                        } elseif (is_numeric($item)) {
+                            $ids[] = $item;
+                        }
+                    }
+                    return $ids;
+                } elseif (is_object($value) && isset($value->ID)) {
+                    return $value->ID;
+                }
+                return $value;
+
+            case 'user':
+                // For user fields, ensure we have user IDs
+                if (is_array($value)) {
+                    $ids = array();
+                    foreach ($value as $item) {
+                        if (is_object($item) && isset($item->ID)) {
+                            $ids[] = $item->ID;
+                        } elseif (is_array($item) && isset($item['ID'])) {
+                            $ids[] = $item['ID'];
+                        } elseif (is_numeric($item)) {
+                            $ids[] = $item;
+                        }
+                    }
+                    return $ids;
+                } elseif (is_object($value) && isset($value->ID)) {
+                    return $value->ID;
+                }
+                return $value;
+
+            case 'taxonomy':
+                // For taxonomy fields, ensure we have term IDs
+                if (is_array($value)) {
+                    $ids = array();
+                    foreach ($value as $item) {
+                        if (is_object($item) && isset($item->term_id)) {
+                            $ids[] = $item->term_id;
+                        } elseif (is_array($item) && isset($item['term_id'])) {
+                            $ids[] = $item['term_id'];
+                        } elseif (is_numeric($item)) {
+                            $ids[] = $item;
+                        }
+                    }
+                    return $ids;
+                } elseif (is_object($value) && isset($value->term_id)) {
+                    return $value->term_id;
+                }
+                return $value;
+
+            case 'repeater':
+            case 'flexible_content':
+                // For repeater and flexible content, recursively process sub-fields
+                if (is_array($value)) {
+                    foreach ($value as $row_key => $row_value) {
+                        if (is_array($row_value)) {
+                            foreach ($row_value as $sub_field_key => $sub_field_value) {
+                                // Get sub-field object
+                                $sub_field_name = $field_object['name'] . '_' . $row_key . '_' . $sub_field_key;
+                                $sub_field_object = get_field_object($sub_field_name, $source_post_id);
+
+                                if ($sub_field_object && isset($sub_field_object['type'])) {
+                                    $value[$row_key][$sub_field_key] = $this->process_field_value(
+                                        $sub_field_value,
+                                        $sub_field_object,
+                                        $source_post_id
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+                return $value;
+
+            case 'group':
+                // For group fields, recursively process sub-fields
+                if (is_array($value)) {
+                    foreach ($value as $sub_field_key => $sub_field_value) {
+                        $sub_field_name = $field_object['name'] . '_' . $sub_field_key;
+                        $sub_field_object = get_field_object($sub_field_name, $source_post_id);
+
+                        if ($sub_field_object && isset($sub_field_object['type'])) {
+                            $value[$sub_field_key] = $this->process_field_value(
+                                $sub_field_value,
+                                $sub_field_object,
+                                $source_post_id
+                            );
+                        }
+                    }
+                }
+                return $value;
+
+            default:
+                // For all other field types, return as-is
+                return $value;
+        }
     }
 
     /**

@@ -3,7 +3,7 @@ Contributors: marianssen
 Tags: polylang, acf, meta, copy, duplicate
 Requires at least: 6.0
 Tested up to: 6.8
-Stable tag: 0.1
+Stable tag: 0.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -28,5 +28,8 @@ This lightweight plugin adds a meta box to your post edit screen. With a single 
 
 = 0.0.1 =
 *First release*
+
+= 0.0.2 =
+*Fixed errors for oEmbed, relationship, user and a few other ACF fields.*
 
 == Upgrade Notice ==
