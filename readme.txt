@@ -26,10 +26,10 @@ This lightweight plugin adds a meta box to your post edit screen. With a single 
 
 == Changelog ==
 
-= 0.0.1 =
+= 0.1 =
 *First release*
 
-= 0.0.2 =
+= 0.2 =
 *Fixed errors for oEmbed, relationship, user and a few other ACF fields.*
 
 == Upgrade Notice ==
