@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Meta Duplicator for Polylang
  * Description: Copy custom fields and ACF data between Polylang translations. Adds a meta box to sync post meta across languages.
- * Version: 0.3
+ * Version: 0.4
  * Author: Marián Rehák
  * Text Domain: meta-duplicator-for-polylang
  * Domain Path: /languages
