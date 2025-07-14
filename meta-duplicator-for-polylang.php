@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Meta Duplicator for Polylang
  * Description: Copy custom fields and ACF data between Polylang translations. Adds a meta box to sync post meta across languages.
- * Version: 0.2
+ * Version: 0.3
  * Author: Marián Rehák
  * Text Domain: meta-duplicator-for-polylang
  * Domain Path: /languages
@@ -20,23 +20,23 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('POLYLANG_DUPLICATE_CONTENT_VERSION', '1');
-define('POLYLANG_DUPLICATE_CONTENT_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('POLYLANG_DUPLICATE_CONTENT_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('MDUFOPL_VERSION', '1');
+define('MDUFOPL_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('MDUFOPL_PLUGIN_URL', plugin_dir_url(__FILE__));
 
-class PolylangContentSync
+class MDUFOPL_ContentSync
 {
     /**
      * Plugin instance
      *
-     * @var PolylangContentSync
+     * @var MDUFOPL_ContentSync
      */
     private static $instance = null;
 
     /**
      * Get plugin instance
      *
-     * @return PolylangContentSync
+     * @return MDUFOPL_ContentSync
      */
     public static function get_instance()
     {
@@ -54,8 +54,16 @@ class PolylangContentSync
         add_action('plugins_loaded', array($this, 'load_textdomain'));
         add_action('admin_init', array($this, 'check_dependencies'));
         add_action('add_meta_boxes', array($this, 'add_sync_meta_box'));
-        add_action('wp_ajax_polylang_sync_content', array($this, 'ajax_sync_content'));
+        add_action('wp_ajax_mdufopl_sync_content', array($this, 'ajax_sync_content'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+    }
+
+    /**
+     * Load plugin textdomain
+     */
+    public function load_textdomain()
+    {
+        load_plugin_textdomain('meta-duplicator-for-polylang', false, dirname(plugin_basename(__FILE__)) . '/languages/');
     }
 
     /**
@@ -75,7 +83,7 @@ class PolylangContentSync
      */
     public function dependency_notice()
     {
-        $plugin_name = esc_html__('Polylang Duplicate Content', 'meta-duplicator-for-polylang');
+        $plugin_name = esc_html__('Meta Duplicator for Polylang', 'meta-duplicator-for-polylang');
         $message = sprintf(
             /* translators: %s: Plugin name */
             esc_html__('%s requires the Polylang plugin to be installed and activated.', 'meta-duplicator-for-polylang'),
@@ -99,11 +107,11 @@ class PolylangContentSync
         $post_types = get_post_types(array('public' => true), 'names');
 
         // Allow filtering of post types
-        $post_types = apply_filters('polylang_duplicate_content_post_types', $post_types);
+        $post_types = apply_filters('mdufopl_post_types', $post_types);
 
         foreach ($post_types as $post_type) {
             add_meta_box(
-                'meta-duplicator-for-polylang',
+                'mdufopl-sync-meta-box',
                 __('Sync Content from Language', 'meta-duplicator-for-polylang'),
                 array($this, 'render_sync_meta_box'),
                 $post_type,
@@ -149,9 +157,9 @@ class PolylangContentSync
         }
 
         // Add nonce for security
-        wp_nonce_field('polylang_sync_content_' . $current_post_id, 'polylang_sync_nonce');
+        wp_nonce_field('mdufopl_sync_content_' . $current_post_id, 'mdufopl_sync_nonce');
 
-        echo '<div id="polylang-sync-buttons">';
+        echo '<div id="mdufopl-sync-buttons">';
         printf(
             '<p>%s</p>',
             esc_html__('Click the button to copy content from the selected language version:', 'meta-duplicator-for-polylang')
@@ -174,7 +182,7 @@ class PolylangContentSync
 
             printf(
                 '<div style="margin-bottom: 10px;">
-                    <button type="button" class="button button-secondary polylang-sync-btn" style="width: 100%%;" 
+                    <button type="button" class="button button-secondary mdufopl-sync-btn" style="width: 100%%;" 
                             data-source-id="%d" 
                             data-target-id="%d" 
                             data-lang-name="%s">
@@ -189,7 +197,7 @@ class PolylangContentSync
         }
 
         echo '</div>';
-        echo '<div id="polylang-sync-message" style="margin-top: 10px;"></div>';
+        echo '<div id="mdufopl-sync-message" style="margin-top: 10px;"></div>';
     }
 
     /**
@@ -218,7 +226,7 @@ class PolylangContentSync
         $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
         // Verify nonce with specific action
-        if (!wp_verify_nonce($nonce, 'polylang_sync_content_' . $target_post_id)) {
+        if (!wp_verify_nonce($nonce, 'mdufopl_sync_content_' . $target_post_id)) {
             wp_die(
                 wp_json_encode(array(
                     'success' => false,
@@ -359,7 +367,7 @@ class PolylangContentSync
         }
 
         // Get excluded fields (filterable)
-        $excluded_fields = apply_filters('polylang_duplicate_content_excluded_fields', array(
+        $excluded_fields = apply_filters('mdufopl_excluded_fields', array(
             '_edit_lock',
             '_edit_last',
             '_wp_old_slug',
@@ -384,7 +392,7 @@ class PolylangContentSync
             }
 
             // Allow filtering of individual meta keys
-            if (!apply_filters('polylang_duplicate_content_sync_meta_key', true, $key, $source_post_id, $target_post_id)) {
+            if (!apply_filters('mdufopl_sync_meta_key', true, $key, $source_post_id, $target_post_id)) {
                 continue;
             }
 
@@ -427,7 +435,7 @@ class PolylangContentSync
         }
 
         // Fire action after sync
-        do_action('polylang_duplicate_content_after_sync', $source_post_id, $target_post_id, $synced_count);
+        do_action('mdufopl_after_sync', $source_post_id, $target_post_id, $synced_count);
 
         if ($synced_count > 0) {
             return array(
@@ -505,7 +513,7 @@ class PolylangContentSync
             } catch (Exception $e) {
                 $error_message = sprintf(
                     /* translators: 1: field name, 2: error message */
-                    esc_html__('Error syncing ACF field %1$s: %2$s', 'polylang-duplicate-content'),
+                    esc_html__('Error syncing ACF field %1$s: %2$s', 'meta-duplicator-for-polylang'),
                     $field_name,
                     $e->getMessage()
                 );
@@ -722,17 +730,17 @@ class PolylangContentSync
         }
 
         wp_enqueue_script(
-            'meta-duplicator-for-polylang',
-            POLYLANG_DUPLICATE_CONTENT_PLUGIN_URL . 'assets/js/sync-content.js',
+            'mdufopl-sync-content',
+            MDUFOPL_PLUGIN_URL . 'assets/js/sync-content.js',
             array('jquery'),
-            POLYLANG_DUPLICATE_CONTENT_VERSION,
+            MDUFOPL_VERSION,
             true
         );
 
         // Localize script for translations and AJAX
         $script_data = array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('polylang_sync_content_' . $post->ID),
+            'nonce' => wp_create_nonce('mdufopl_sync_content_' . $post->ID),
             'messages' => array(
                 /* translators: 1: polylang language */
                 'confirm' => esc_html__('Are you sure you want to copy all content from the %s language version? This action will overwrite all current metadata and ACF fields.', 'meta-duplicator-for-polylang'),
@@ -743,29 +751,29 @@ class PolylangContentSync
             )
         );
 
-        wp_localize_script('jquery', 'polylangDuplicateContent', $script_data);
+        wp_localize_script('jquery', 'mdufoplDuplicateContent', $script_data);
     }
 }
 
 // Initialize the plugin
-function polylang_duplicate_content_init()
+function mdufopl_init()
 {
-    return PolylangContentSync::get_instance();
+    return MDUFOPL_ContentSync::get_instance();
 }
 
 // Hook into plugins_loaded to ensure all plugins are loaded
-add_action('plugins_loaded', 'polylang_duplicate_content_init');
+add_action('plugins_loaded', 'mdufopl_init');
 
 // Activation hook
-register_activation_hook(__FILE__, 'polylang_duplicate_content_activate');
+register_activation_hook(__FILE__, 'mdufopl_activate');
 
-function polylang_duplicate_content_activate()
+function mdufopl_activate()
 {
     // Check if Polylang is active
     if (!function_exists('pll_get_post_translations')) {
         deactivate_plugins(plugin_basename(__FILE__));
 
-        $plugin_name = esc_html__('Polylang Duplicate Content', 'meta-duplicator-for-polylang');
+        $plugin_name = esc_html__('Meta Duplicator for Polylang', 'meta-duplicator-for-polylang');
         $message = sprintf(
             /* translators: %s: Plugin name */
             esc_html__('%s requires the Polylang plugin to be installed and activated.', 'meta-duplicator-for-polylang'),
@@ -781,9 +789,9 @@ function polylang_duplicate_content_activate()
 }
 
 // Deactivation hook
-register_deactivation_hook(__FILE__, 'polylang_duplicate_content_deactivate');
+register_deactivation_hook(__FILE__, 'mdufopl_deactivate');
 
-function polylang_duplicate_content_deactivate()
+function mdufopl_deactivate()
 {
     // Clean up if needed
     // Currently no cleanup required
