@@ -33,6 +33,6 @@ This lightweight plugin adds a meta box to your post edit screen. With a single 
 *Fixed errors for oEmbed, relationship, user and a few other ACF fields.*
 
 = 0.3 =
-*Updated function name prefixes to be in accordance with Wordpress plugin guidelines. *
+*Updated function name prefixes to be in accordance with Wordpress plugin guidelines.*
 
 == Upgrade Notice ==
