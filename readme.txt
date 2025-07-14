@@ -35,7 +35,7 @@ This lightweight plugin adds a meta box to your post edit screen. With a single 
 = 0.3 =
 *Updated function name prefixes to be in accordance with Wordpress plugin guidelines.*
 
-= 0.4 =
+= 0.4.1 =
 *Removed text domain function.*
 
 == Upgrade Notice ==
