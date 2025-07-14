@@ -57,15 +57,7 @@ class MDUFOPL_ContentSync
         add_action('wp_ajax_mdufopl_sync_content', array($this, 'ajax_sync_content'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
-
-    /**
-     * Load plugin textdomain
-     */
-    public function load_textdomain()
-    {
-        load_plugin_textdomain('meta-duplicator-for-polylang', false, dirname(plugin_basename(__FILE__)) . '/languages/');
-    }
-
+    
     /**
      * Check if required dependencies are active
      */
