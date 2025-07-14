@@ -51,7 +51,6 @@ class MDUFOPL_ContentSync
      */
     private function __construct()
     {
-        add_action('plugins_loaded', array($this, 'load_textdomain'));
         add_action('admin_init', array($this, 'check_dependencies'));
         add_action('add_meta_boxes', array($this, 'add_sync_meta_box'));
         add_action('wp_ajax_mdufopl_sync_content', array($this, 'ajax_sync_content'));
