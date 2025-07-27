@@ -1,0 +1,141 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Meta Duplicator for Polylang\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-27 15:10+0000\n"
+"PO-Revision-Date: 2025-07-27 15:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: Čeština\n"
+"Language: cs_CZ\n"
+"Plural-Forms: nplurals=3; plural=( n == 1 ) ? 0 : ( n >= 2 && n <= 4 ) ? 1 : "
+"2;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.8.0; wp-6.8.1; php-8.3.22\n"
+"X-Domain: meta-duplicator-for-polylang"
+
+#. %s: Plugin name
+#: meta-duplicator-for-polylang.php:81 meta-duplicator-for-polylang.php:771
+#, php-format
+msgid "%s requires the Polylang plugin to be installed and activated."
+msgstr "%s vyžaduje instalaci a aktivaci pluginu Polylang."
+
+#. 1: polylang language
+#: meta-duplicator-for-polylang.php:738
+#, php-format
+msgid ""
+"Are you sure you want to copy all content from the %s language version? This "
+"action will overwrite all current metadata and ACF fields."
+msgstr ""
+"Opravdu chcete zkopírovat veškerý obsah z jazykové verze %s? Tato akce "
+"přepíše všechna aktuální metadata a pole ACF."
+
+#: meta-duplicator-for-polylang.php:157
+msgid "Click the button to copy content from the selected language version:"
+msgstr "Kliknutím na tlačítko zkopírujete obsah z vybrané jazykové verze:"
+
+#. %d: number of synced fields
+#: meta-duplicator-for-polylang.php:304
+msgid "Content was successfully copied (%d fields)."
+msgstr "Obsah byl úspěšně zkopírován (%d polí)."
+
+#. Description of the plugin
+msgid ""
+"Copy custom fields and ACF data between Polylang translations. Adds a meta "
+"box to sync post meta across languages."
+msgstr ""
+"Kopíruje vlastní pole a data ACF mezi překlady Polylang. Přidává meta pole "
+"pro synchronizaci meta dat příspěvku napříč jazyky."
+
+#: meta-duplicator-for-polylang.php:740
+msgid "Copying content..."
+msgstr "Kopírování obsahu..."
+
+#: meta-duplicator-for-polylang.php:739
+msgid "Copying..."
+msgstr "Kopírování..."
+
+#: meta-duplicator-for-polylang.php:742
+msgid "Error communicating with server."
+msgstr "Chyba komunikace se serverem."
+
+#. 1: field name, 2: error message
+#: meta-duplicator-for-polylang.php:508
+#, php-format
+msgid "Error syncing ACF field %1$s: %2$s"
+msgstr "Chyba při synchronizaci pole ACF %1$s: %2$s"
+
+#. %s: error message
+#: meta-duplicator-for-polylang.php:422
+#, php-format
+msgid "Error syncing ACF fields: %s"
+msgstr "Chyba při synchronizaci polí ACF: %s"
+
+#. 1: meta key, 2: error message
+#: meta-duplicator-for-polylang.php:405
+#, php-format
+msgid "Error syncing meta key %1$s: %2$s"
+msgstr "Chyba při synchronizaci meta klíče %1$s: %2$s"
+
+#: meta-duplicator-for-polylang.php:741
+msgid "Error:"
+msgstr "Chyba:"
+
+#: meta-duplicator-for-polylang.php:240
+msgid "Invalid post IDs."
+msgstr "Neplatná ID příspěvků."
+
+#: meta-duplicator-for-polylang.php:205
+msgid "Invalid request method."
+msgstr "Neplatná metoda požadavku."
+
+#. Author of the plugin
+msgid "Marián Rehák"
+msgstr ""
+
+#. Name of the plugin
+#: meta-duplicator-for-polylang.php:78 meta-duplicator-for-polylang.php:768
+msgid "Meta Duplicator for Polylang"
+msgstr ""
+
+#: meta-duplicator-for-polylang.php:443
+msgid "No fields were synchronized."
+msgstr "Žádná pole nebyla synchronizována."
+
+#: meta-duplicator-for-polylang.php:357
+msgid "No metadata found to copy."
+msgstr "No metadata found to copy."
+
+#: meta-duplicator-for-polylang.php:146
+msgid "No other language variations found."
+msgstr "Nebyly nalezeny žádné další jazykové varianty."
+
+#: meta-duplicator-for-polylang.php:273
+msgid "One or both posts do not exist."
+msgstr "Jeden nebo oba příspěvky neexistují."
+
+#: meta-duplicator-for-polylang.php:255
+msgid "Permission denied."
+msgstr "Nedostatečné oprávnění."
+
+#: meta-duplicator-for-polylang.php:777
+msgid "Plugin Activation Error"
+msgstr "Chyba aktivace pluginu"
+
+#: meta-duplicator-for-polylang.php:132
+msgid "Polylang plugin is not active."
+msgstr "Plugin Polylang není aktivní."
+
+#: meta-duplicator-for-polylang.php:288
+msgid "Posts are not translations of each other."
+msgstr "Příspěvky nejsou vzájemným překladem."
+
+#: meta-duplicator-for-polylang.php:225
+msgid "Security check failed."
+msgstr "Bezpečnostní kontrola nonce selhala."
+
+#: meta-duplicator-for-polylang.php:107
+msgid "Sync Content from Language"
+msgstr "Synchronizace obsahu z jazyka"
