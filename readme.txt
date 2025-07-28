@@ -44,4 +44,7 @@ This lightweight plugin adds a meta box to your post edit screen. With a single 
 = 1.0 =
 *First public release. Added Czech translation.*
 
+= 1.0.1 =
+*ACF textarea fix.*
+
 == Upgrade Notice ==
